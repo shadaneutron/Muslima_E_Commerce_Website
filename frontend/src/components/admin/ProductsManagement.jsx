@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,16 +9,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { Product } from '../../types';
 import { products as initialProducts } from '../../data/products';
-import { Plus, Pencil, Settings } from 'lucide-react';
+import { Plus, Settings } from 'lucide-react';
 
-const ProductsManagement: React.FC = () => {
+const ProductsManagement = () => {
   const { language } = useLanguage();
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState(initialProducts);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [newProduct, setNewProduct] = useState<Partial<Product>>({
+  const [newProduct, setNewProduct] = useState({
     name: { ar: '', en: '' },
     description: { ar: '', en: '' },
     price: 0,
@@ -27,12 +24,12 @@ const ProductsManagement: React.FC = () => {
     image: '',
     sizes: [],
     colors: [],
-    inStock: true
+    inStock: true,
   });
 
   const handleAddProduct = () => {
     if (newProduct.name?.ar && newProduct.name?.en && newProduct.price) {
-      const product: Product = {
+      const product = {
         id: Date.now().toString(),
         name: newProduct.name,
         description: newProduct.description || { ar: '', en: '' },
@@ -41,7 +38,7 @@ const ProductsManagement: React.FC = () => {
         image: newProduct.image || 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400',
         sizes: newProduct.sizes || ['S', 'M', 'L', 'XL'],
         colors: newProduct.colors || ['أسود'],
-        inStock: newProduct.inStock || true
+        inStock: newProduct.inStock || true,
       };
       setProducts([...products, product]);
       setNewProduct({
@@ -52,22 +49,20 @@ const ProductsManagement: React.FC = () => {
         image: '',
         sizes: [],
         colors: [],
-        inStock: true
+        inStock: true,
       });
       setShowAddModal(false);
     }
   };
 
-  const handleDeleteProduct = (productId: string) => {
+  const handleDeleteProduct = (productId) => {
     if (confirm(language === 'ar' ? 'هل أنت متأكد من حذف هذا المنتج؟' : 'Are you sure you want to delete this product?')) {
       setProducts(products.filter(p => p.id !== productId));
     }
   };
 
-  const toggleProductStock = (productId: string) => {
-    setProducts(products.map(p => 
-      p.id === productId ? { ...p, inStock: !p.inStock } : p
-    ));
+  const toggleProductStock = (productId) => {
+    setProducts(products.map(p => (p.id === productId ? { ...p, inStock: !p.inStock } : p)));
   };
 
   return (
@@ -95,40 +90,48 @@ const ProductsManagement: React.FC = () => {
                   <Label>{language === 'ar' ? 'اسم المنتج (عربي)' : 'Product Name (Arabic)'}</Label>
                   <Input
                     value={newProduct.name?.ar || ''}
-                    onChange={(e) => setNewProduct({
-                      ...newProduct,
-                      name: { ...newProduct.name, ar: e.target.value, en: newProduct.name?.en || '' }
-                    })}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        name: { ...newProduct.name, ar: e.target.value, en: newProduct.name?.en || '' },
+                      })
+                    }
                   />
                 </div>
                 <div>
                   <Label>{language === 'ar' ? 'اسم المنتج (إنجليزي)' : 'Product Name (English)'}</Label>
                   <Input
                     value={newProduct.name?.en || ''}
-                    onChange={(e) => setNewProduct({
-                      ...newProduct,
-                      name: { ...newProduct.name, en: e.target.value, ar: newProduct.name?.ar || '' }
-                    })}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        name: { ...newProduct.name, en: e.target.value, ar: newProduct.name?.ar || '' },
+                      })
+                    }
                   />
                 </div>
                 <div>
                   <Label>{language === 'ar' ? 'وصف المنتج (عربي)' : 'Description (Arabic)'}</Label>
                   <Textarea
                     value={newProduct.description?.ar || ''}
-                    onChange={(e) => setNewProduct({
-                      ...newProduct,
-                      description: { ...newProduct.description, ar: e.target.value, en: newProduct.description?.en || '' }
-                    })}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        description: { ...newProduct.description, ar: e.target.value, en: newProduct.description?.en || '' },
+                      })
+                    }
                   />
                 </div>
                 <div>
                   <Label>{language === 'ar' ? 'وصف المنتج (إنجليزي)' : 'Description (English)'}</Label>
                   <Textarea
                     value={newProduct.description?.en || ''}
-                    onChange={(e) => setNewProduct({
-                      ...newProduct,
-                      description: { ...newProduct.description, en: e.target.value, ar: newProduct.description?.ar || '' }
-                    })}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        description: { ...newProduct.description, en: e.target.value, ar: newProduct.description?.ar || '' },
+                      })
+                    }
                   />
                 </div>
                 <div>
@@ -136,18 +139,12 @@ const ProductsManagement: React.FC = () => {
                   <Input
                     type="number"
                     value={newProduct.price || 0}
-                    onChange={(e) => setNewProduct({
-                      ...newProduct,
-                      price: parseInt(e.target.value)
-                    })}
+                    onChange={(e) => setNewProduct({ ...newProduct, price: parseInt(e.target.value) })}
                   />
                 </div>
                 <div>
                   <Label>{language === 'ar' ? 'التصنيف' : 'Category'}</Label>
-                  <Select
-                    value={newProduct.category}
-                    onValueChange={(value) => setNewProduct({ ...newProduct, category: value })}
-                  >
+                  <Select value={newProduct.category} onValueChange={(value) => setNewProduct({ ...newProduct, category: value })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -160,11 +157,7 @@ const ProductsManagement: React.FC = () => {
                 </div>
                 <div className="col-span-2">
                   <Label>{language === 'ar' ? 'رابط الصورة' : 'Image URL'}</Label>
-                  <Input
-                    value={newProduct.image || ''}
-                    onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
-                    placeholder="https://example.com/image.jpg"
-                  />
+                  <Input value={newProduct.image || ''} onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })} placeholder="https://example.com/image.jpg" />
                 </div>
               </div>
               <Button onClick={handleAddProduct} className="bg-amber-600 hover:bg-amber-700">
@@ -189,11 +182,7 @@ const ProductsManagement: React.FC = () => {
               {products.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>
-                    <img 
-                      src={product.image} 
-                      alt={product.name[language]}
-                      className="w-12 h-12 object-cover rounded"
-                    />
+                    <img src={product.image} alt={product.name[language]} className="w-12 h-12 object-cover rounded" />
                   </TableCell>
                   <TableCell>
                     <div className="font-medium">{product.name[language]}</div>
@@ -204,30 +193,19 @@ const ProductsManagement: React.FC = () => {
                       {product.category}
                     </Badge>
                   </TableCell>
-                  <TableCell>{product.price} {language === 'ar' ? 'ر.س' : 'SAR'}</TableCell>
+                  <TableCell>
+                    {product.price} {language === 'ar' ? 'ر.س' : 'SAR'}
+                  </TableCell>
                   <TableCell>
                     <Badge className={product.inStock ? 'bg-green-500' : 'bg-red-500'}>
-                      {product.inStock 
-                        ? (language === 'ar' ? 'متوفر' : 'In Stock')
-                        : (language === 'ar' ? 'غير متوفر' : 'Out of Stock')
-                      }
+                      {product.inStock ? (language === 'ar' ? 'متوفر' : 'In Stock') : (language === 'ar' ? 'غير متوفر' : 'Out of Stock')}
                     </Badge>
                   </TableCell>
                   <TableCell className="space-x-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => toggleProductStock(product.id)}
-                      className="border-amber-300 text-amber-700 hover:bg-amber-100"
-                    >
+                    <Button size="sm" variant="outline" onClick={() => toggleProductStock(product.id)} className="border-amber-300 text-amber-700 hover:bg-amber-100">
                       <Settings className="h-4 w-4" />
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleDeleteProduct(product.id)}
-                      className="border-red-300 text-red-700 hover:bg-red-100"
-                    >
+                    <Button size="sm" variant="outline" onClick={() => handleDeleteProduct(product.id)} className="border-red-300 text-red-700 hover:bg-red-100">
                       {language === 'ar' ? 'حذف' : 'Delete'}
                     </Button>
                   </TableCell>

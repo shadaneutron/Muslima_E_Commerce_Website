@@ -1,23 +1,17 @@
-
 import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { X, Settings } from 'lucide-react';
+import { Settings } from 'lucide-react';
 
-interface MobileMenuProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
+const MobileMenu = ({ isOpen, onClose }) => {
   const { t, language } = useLanguage();
-  
-  const scrollToSection = (sectionId: string) => {
+
+  const scrollToSection = (sectionId) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
     onClose();
   };
-  
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -26,7 +20,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
             {t('nav.menu')}
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="flex flex-col space-y-4 py-4">
           <Button
             variant="ghost"
@@ -35,7 +29,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
           >
             {t('nav.home')}
           </Button>
-          
+
           <Button
             variant="ghost"
             onClick={() => scrollToSection('products')}
@@ -43,7 +37,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
           >
             {t('nav.products')}
           </Button>
-          
+
           <Button
             variant="ghost"
             onClick={() => scrollToSection('about')}
@@ -51,7 +45,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
           >
             {t('nav.about')}
           </Button>
-          
+
           <Button
             variant="ghost"
             onClick={() => {

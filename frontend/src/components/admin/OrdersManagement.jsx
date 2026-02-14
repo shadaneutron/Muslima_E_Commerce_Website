@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,13 +5,11 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { Order } from '../../types';
 
-const OrdersManagement: React.FC = () => {
+const OrdersManagement = () => {
   const { language } = useLanguage();
-  
-  // بيانات وهمية للطلبات
-  const [orders, setOrders] = useState<Order[]>([
+
+  const [orders, setOrders] = useState([
     {
       id: '001',
       items: [
@@ -28,8 +25,8 @@ const OrdersManagement: React.FC = () => {
           inStock: true,
           quantity: 1,
           selectedSize: 'M',
-          selectedColor: 'أسود'
-        }
+          selectedColor: 'أسود',
+        },
       ],
       total: 299,
       paymentMethod: 'bank',
@@ -38,10 +35,10 @@ const OrdersManagement: React.FC = () => {
         email: 'fatima@example.com',
         phone: '01234567890',
         address: 'شارع النصر، المعادي',
-        city: 'القاهرة'
+        city: 'القاهرة',
       },
       status: 'pending',
-      createdAt: new Date('2024-01-15')
+      createdAt: new Date('2024-01-15'),
     },
     {
       id: '002',
@@ -58,8 +55,8 @@ const OrdersManagement: React.FC = () => {
           inStock: true,
           quantity: 1,
           selectedSize: 'L',
-          selectedColor: 'بيج'
-        }
+          selectedColor: 'بيج',
+        },
       ],
       total: 449,
       paymentMethod: 'visa',
@@ -68,38 +65,35 @@ const OrdersManagement: React.FC = () => {
         email: 'aisha@example.com',
         phone: '01098765432',
         address: 'شارع الهرم، الجيزة',
-        city: 'الجيزة'
+        city: 'الجيزة',
       },
       status: 'confirmed',
-      createdAt: new Date('2024-01-16')
-    }
+      createdAt: new Date('2024-01-16'),
+    },
   ]);
 
-  const updateOrderStatus = (orderId: string, newStatus: 'pending' | 'confirmed' | 'shipped' | 'delivered') => {
-    setOrders(orders.map(order => 
-      order.id === orderId ? { ...order, status: newStatus } : order
-    ));
+  const updateOrderStatus = (orderId, newStatus) => {
+    setOrders(orders.map(order => (order.id === orderId ? { ...order, status: newStatus } : order)));
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status) => {
     const statusConfig = {
       pending: { color: 'bg-yellow-500', text: language === 'ar' ? 'قيد المراجعة' : 'Pending' },
       confirmed: { color: 'bg-blue-500', text: language === 'ar' ? 'مؤكد' : 'Confirmed' },
       shipped: { color: 'bg-orange-500', text: language === 'ar' ? 'تم الشحن' : 'Shipped' },
-      delivered: { color: 'bg-green-500', text: language === 'ar' ? 'تم التسليم' : 'Delivered' }
+      delivered: { color: 'bg-green-500', text: language === 'ar' ? 'تم التسليم' : 'Delivered' },
     };
-    
-    const config = statusConfig[status as keyof typeof statusConfig];
+    const config = statusConfig[status];
     return <Badge className={`${config.color} text-white`}>{config.text}</Badge>;
   };
 
-  const getPaymentMethodText = (method: string) => {
+  const getPaymentMethodText = (method) => {
     const methods = {
       bank: language === 'ar' ? 'تحويل بنكي' : 'Bank Transfer',
       visa: language === 'ar' ? 'فيزا' : 'Visa',
-      cod: language === 'ar' ? 'دفع عند الاستلام' : 'Cash on Delivery'
+      cod: language === 'ar' ? 'دفع عند الاستلام' : 'Cash on Delivery',
     };
-    return methods[method as keyof typeof methods];
+    return methods[method];
   };
 
   return (
@@ -138,10 +132,7 @@ const OrdersManagement: React.FC = () => {
                   <TableCell>{getStatusBadge(order.status)}</TableCell>
                   <TableCell>{order.createdAt.toLocaleDateString('ar-EG')}</TableCell>
                   <TableCell>
-                    <Select
-                      value={order.status}
-                      onValueChange={(value) => updateOrderStatus(order.id, value as any)}
-                    >
+                    <Select value={order.status} onValueChange={(value) => updateOrderStatus(order.id, value)}>
                       <SelectTrigger className="w-32">
                         <SelectValue />
                       </SelectTrigger>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,37 +8,26 @@ import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 
-const SiteSettings: React.FC = () => {
+const SiteSettings = () => {
   const { language } = useLanguage();
   const { toast } = useToast();
-  
+
   const [settings, setSettings] = useState({
     siteName: { ar: 'مُسلمة', en: 'Muslima' },
-    description: { 
-      ar: 'متجر الأزياء الشرعية الأول',
-      en: 'The first modest fashion store'
-    },
+    description: { ar: 'متجر الأزياء الشرعية الأول', en: 'The first modest fashion store' },
     contactEmail: 'info@muslima.com',
     contactPhone: '+966501234567',
-    address: {
-      ar: 'الرياض، المملكة العربية السعودية',
-      en: 'Riyadh, Saudi Arabia'
-    },
-    bankDetails: {
-      bankName: 'البنك الأهلي السعودي',
-      accountNumber: '1234567890',
-      iban: 'SA123456789012345678901234'
-    },
+    address: { ar: 'الرياض، المملكة العربية السعودية', en: 'Riyadh, Saudi Arabia' },
+    bankDetails: { bankName: 'البنك الأهلي السعودي', accountNumber: '1234567890', iban: 'SA123456789012345678901234' },
     shippingFee: 25,
     freeShippingLimit: 500,
     enableCOD: true,
     enableBankTransfer: true,
     enableVisa: true,
-    maintenanceMode: false
+    maintenanceMode: false,
   });
 
   const handleSaveSettings = () => {
-    // في التطبيق الحقيقي، يجب حفظ الإعدادات في قاعدة البيانات
     toast({
       title: language === 'ar' ? 'تم الحفظ' : 'Saved',
       description: language === 'ar' ? 'تم حفظ الإعدادات بنجاح' : 'Settings saved successfully',
@@ -60,43 +48,31 @@ const SiteSettings: React.FC = () => {
               <Label>{language === 'ar' ? 'اسم الموقع (عربي)' : 'Site Name (Arabic)'}</Label>
               <Input
                 value={settings.siteName.ar}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  siteName: { ...settings.siteName, ar: e.target.value }
-                })}
+                onChange={(e) => setSettings({ ...settings, siteName: { ...settings.siteName, ar: e.target.value } })}
               />
             </div>
             <div>
               <Label>{language === 'ar' ? 'اسم الموقع (إنجليزي)' : 'Site Name (English)'}</Label>
               <Input
                 value={settings.siteName.en}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  siteName: { ...settings.siteName, en: e.target.value }
-                })}
+                onChange={(e) => setSettings({ ...settings, siteName: { ...settings.siteName, en: e.target.value } })}
               />
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>{language === 'ar' ? 'وصف الموقع (عربي)' : 'Site Description (Arabic)'}</Label>
               <Textarea
                 value={settings.description.ar}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  description: { ...settings.description, ar: e.target.value }
-                })}
+                onChange={(e) => setSettings({ ...settings, description: { ...settings.description, ar: e.target.value } })}
               />
             </div>
             <div>
               <Label>{language === 'ar' ? 'وصف الموقع (إنجليزي)' : 'Site Description (English)'}</Label>
               <Textarea
                 value={settings.description.en}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  description: { ...settings.description, en: e.target.value }
-                })}
+                onChange={(e) => setSettings({ ...settings, description: { ...settings.description, en: e.target.value } })}
               />
             </div>
           </div>
@@ -133,10 +109,7 @@ const SiteSettings: React.FC = () => {
               <Label>{language === 'ar' ? 'اسم البنك' : 'Bank Name'}</Label>
               <Input
                 value={settings.bankDetails.bankName}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  bankDetails: { ...settings.bankDetails, bankName: e.target.value }
-                })}
+                onChange={(e) => setSettings({ ...settings, bankDetails: { ...settings.bankDetails, bankName: e.target.value } })}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -144,24 +117,18 @@ const SiteSettings: React.FC = () => {
                 <Label>{language === 'ar' ? 'رقم الحساب' : 'Account Number'}</Label>
                 <Input
                   value={settings.bankDetails.accountNumber}
-                  onChange={(e) => setSettings({
-                    ...settings,
-                    bankDetails: { ...settings.bankDetails, accountNumber: e.target.value }
-                  })}
+                  onChange={(e) => setSettings({ ...settings, bankDetails: { ...settings.bankDetails, accountNumber: e.target.value } })}
                 />
               </div>
               <div>
                 <Label>{language === 'ar' ? 'رقم الآيبان' : 'IBAN'}</Label>
                 <Input
                   value={settings.bankDetails.iban}
-                  onChange={(e) => setSettings({
-                    ...settings,
-                    bankDetails: { ...settings.bankDetails, iban: e.target.value }
-                  })}
+                  onChange={(e) => setSettings({ ...settings, bankDetails: { ...settings.bankDetails, iban: e.target.value } })}
                 />
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>{language === 'ar' ? 'رسوم الشحن' : 'Shipping Fee'}</Label>
@@ -184,31 +151,19 @@ const SiteSettings: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label>{language === 'ar' ? 'تفعيل الدفع عند الاستلام' : 'Enable Cash on Delivery'}</Label>
-                <Switch
-                  checked={settings.enableCOD}
-                  onCheckedChange={(checked) => setSettings({ ...settings, enableCOD: checked })}
-                />
+                <Switch checked={settings.enableCOD} onCheckedChange={(checked) => setSettings({ ...settings, enableCOD: checked })} />
               </div>
               <div className="flex items-center justify-between">
                 <Label>{language === 'ar' ? 'تفعيل التحويل البنكي' : 'Enable Bank Transfer'}</Label>
-                <Switch
-                  checked={settings.enableBankTransfer}
-                  onCheckedChange={(checked) => setSettings({ ...settings, enableBankTransfer: checked })}
-                />
+                <Switch checked={settings.enableBankTransfer} onCheckedChange={(checked) => setSettings({ ...settings, enableBankTransfer: checked })} />
               </div>
               <div className="flex items-center justify-between">
                 <Label>{language === 'ar' ? 'تفعيل الفيزا' : 'Enable Visa Payment'}</Label>
-                <Switch
-                  checked={settings.enableVisa}
-                  onCheckedChange={(checked) => setSettings({ ...settings, enableVisa: checked })}
-                />
+                <Switch checked={settings.enableVisa} onCheckedChange={(checked) => setSettings({ ...settings, enableVisa: checked })} />
               </div>
               <div className="flex items-center justify-between">
                 <Label>{language === 'ar' ? 'وضع الصيانة' : 'Maintenance Mode'}</Label>
-                <Switch
-                  checked={settings.maintenanceMode}
-                  onCheckedChange={(checked) => setSettings({ ...settings, maintenanceMode: checked })}
-                />
+                <Switch checked={settings.maintenanceMode} onCheckedChange={(checked) => setSettings({ ...settings, maintenanceMode: checked })} />
               </div>
             </div>
           </div>

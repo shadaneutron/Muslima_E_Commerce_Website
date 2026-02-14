@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import { CartProvider } from '../contexts/CartContext';
@@ -10,7 +9,7 @@ import OrdersManagement from '../components/admin/OrdersManagement';
 import ProductsManagement from '../components/admin/ProductsManagement';
 import SiteSettings from '../components/admin/SiteSettings';
 import { useLanguage } from '../contexts/LanguageContext';
-import { ArrowLeft, User, Settings, Plus } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 const AdminDashboard = () => {
   const { t, language } = useLanguage();
@@ -19,7 +18,6 @@ const AdminDashboard = () => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
 
   const handleLogin = () => {
-    // في التطبيق الحقيقي، يجب التحقق من بيانات الاعتماد مع قاعدة البيانات
     if (credentials.username === 'admin' && credentials.password === 'admin123') {
       setIsAuthenticated(true);
       setShowLoginModal(false);
@@ -43,19 +41,16 @@ const AdminDashboard = () => {
               placeholder={language === 'ar' ? 'اسم المستخدم' : 'Username'}
               className="w-full p-3 border border-amber-200 rounded-lg focus:border-amber-400"
               value={credentials.username}
-              onChange={(e) => setCredentials({...credentials, username: e.target.value})}
+              onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
             />
             <input
               type="password"
               placeholder={language === 'ar' ? 'كلمة المرور' : 'Password'}
               className="w-full p-3 border border-amber-200 rounded-lg focus:border-amber-400"
               value={credentials.password}
-              onChange={(e) => setCredentials({...credentials, password: e.target.value})}
+              onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
             />
-            <Button 
-              onClick={handleLogin}
-              className="w-full bg-amber-600 hover:bg-amber-700"
-            >
+            <Button onClick={handleLogin} className="w-full bg-amber-600 hover:bg-amber-700">
               {language === 'ar' ? 'دخول' : 'Login'}
             </Button>
             <p className="text-sm text-amber-700 text-center">
@@ -72,9 +67,9 @@ const AdminDashboard = () => {
       <div className="bg-white border-b border-amber-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Button 
-              variant="outline" 
-              onClick={() => window.location.href = '/'}
+            <Button
+              variant="outline"
+              onClick={() => (window.location.href = '/')}
               className="border-amber-300 text-amber-700 hover:bg-amber-100"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -84,7 +79,7 @@ const AdminDashboard = () => {
               {language === 'ar' ? 'لوحة تحكم مُسلمة' : 'Muslima Admin Panel'}
             </h1>
           </div>
-          <Button 
+          <Button
             onClick={() => setIsAuthenticated(false)}
             variant="outline"
             className="border-red-300 text-red-700 hover:bg-red-100"
@@ -111,11 +106,9 @@ const AdminDashboard = () => {
           <TabsContent value="orders">
             <OrdersManagement />
           </TabsContent>
-
           <TabsContent value="products">
             <ProductsManagement />
           </TabsContent>
-
           <TabsContent value="settings">
             <SiteSettings />
           </TabsContent>
