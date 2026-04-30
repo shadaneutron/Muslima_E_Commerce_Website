@@ -1,6 +1,6 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
@@ -100,3 +100,67 @@ def addOrderItems(request):
         product.save()
 
     return Response(OrderSerializer(order).data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def getOrders(request):
+    orders = Order.objects.all()
+    return Response(OrderSerializer(orders, many=True).data)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def updateOrderToDelivered(request, pk):
+    from django.utils import timezone
+    order = Order.objects.get(_id=pk)
+    order.isDelivered = True
+    order.deliveredAt = timezone.now()
+    # update status mapping for frontend compatibility
+    order.status = 'delivered' # if status was added
+    order.save()
+    return Response('Order was delivered')
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def createProduct(request):
+    user = request.user
+    product = Product.objects.create(
+        user=user,
+        name='Sample Name',
+        price=0,
+        brand='Sample Brand',
+        countInStock=0,
+        description=''
+    )
+    return Response(ProductSerializer(product).data)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def updateProduct(request, pk):
+    data = request.data
+    product = Product.objects.get(_id=pk)
+
+    product.name = data.get('name', product.name)
+    product.price = data.get('price', product.price)
+    product.brand = data.get('brand', product.brand)
+    product.countInStock = data.get('countInStock', product.countInStock)
+    product.description = data.get('description', product.description)
+    
+    # Handle category update
+    cat_id = data.get('category')
+    if cat_id:
+        try:
+            category = Category.objects.get(_id=cat_id)
+            product.category = category
+        except Category.DoesNotExist:
+            pass
+
+    product.save()
+
+    return Response(ProductSerializer(product).data)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def deleteProduct(request, pk):
+    product = Product.objects.get(_id=pk)
+    product.delete()
+    return Response('Product Deleted')

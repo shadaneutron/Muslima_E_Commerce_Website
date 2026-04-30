@@ -1,99 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useAuth } from '../../contexts/AuthContext';
+import axios from 'axios';
+import { useToast } from '@/hooks/use-toast';
 
 const OrdersManagement = () => {
   const { language } = useLanguage();
+  const { token } = useAuth();
+  const { toast } = useToast();
 
-  const [orders, setOrders] = useState([
-    {
-      id: '001',
-      items: [
-        {
-          id: '1',
-          name: { ar: 'عباءة كلاسيكية سوداء', en: 'Classic Black Abaya' },
-          description: { ar: 'عباءة أنيقة', en: 'Elegant abaya' },
-          price: 299,
-          category: 'abayas',
-          image: '',
-          sizes: ['M'],
-          colors: ['أسود'],
-          inStock: true,
-          quantity: 1,
-          selectedSize: 'M',
-          selectedColor: 'أسود',
-        },
-      ],
-      total: 299,
-      paymentMethod: 'bank',
-      customerInfo: {
-        name: 'فاطمة أحمد',
-        email: 'fatima@example.com',
-        phone: '01234567890',
-        address: 'شارع النصر، المعادي',
-        city: 'القاهرة',
-      },
-      status: 'pending',
-      createdAt: new Date('2024-01-15'),
-    },
-    {
-      id: '002',
-      items: [
-        {
-          id: '2',
-          name: { ar: 'جلباب مطرز بالذهبي', en: 'Gold Embroidered Jilbab' },
-          description: { ar: 'جلباب فاخر', en: 'Luxury jilbab' },
-          price: 449,
-          category: 'jilbabs',
-          image: '',
-          sizes: ['L'],
-          colors: ['بيج'],
-          inStock: true,
-          quantity: 1,
-          selectedSize: 'L',
-          selectedColor: 'بيج',
-        },
-      ],
-      total: 449,
-      paymentMethod: 'visa',
-      customerInfo: {
-        name: 'عائشة محمد',
-        email: 'aisha@example.com',
-        phone: '01098765432',
-        address: 'شارع الهرم، الجيزة',
-        city: 'الجيزة',
-      },
-      status: 'confirmed',
-      createdAt: new Date('2024-01-16'),
-    },
-  ]);
+  const [orders, setOrders] = useState([]);
 
-  const updateOrderStatus = (orderId, newStatus) => {
-    setOrders(orders.map(order => (order.id === orderId ? { ...order, status: newStatus } : order)));
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        };
+        const res = await axios.get('http://127.0.0.1:8080/api/orders/', config);
+        setOrders(res.data);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+    if (token) {
+        fetchOrders();
+    }
+  }, [token]);
+
+  const updateOrderStatus = async (orderId, newStatus) => {
+    if (newStatus === 'delivered') {
+        try {
+            const config = {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            };
+            await axios.put(`http://127.0.0.1:8080/api/orders/${orderId}/deliver/`, {}, config);
+            
+            setOrders(orders.map(order => (order._id === orderId ? { ...order, isDelivered: true, status: 'delivered' } : order)));
+            toast({ title: language === 'ar' ? "تم التحديث بنجاح" : "Updated successfully" });
+        } catch (error) {
+            toast({ title: "Error", description: error.message, variant: "destructive" });
+        }
+    } else {
+        // Just update local state for other statuses to mimic functionality since only deliver endpoint was built
+        setOrders(orders.map(order => (order._id === orderId ? { ...order, status: newStatus } : order)));
+    }
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (order) => {
+    const status = order.status || (order.isDelivered ? 'delivered' : (order.isPaid ? 'confirmed' : 'pending'));
     const statusConfig = {
       pending: { color: 'bg-yellow-500', text: language === 'ar' ? 'قيد المراجعة' : 'Pending' },
       confirmed: { color: 'bg-blue-500', text: language === 'ar' ? 'مؤكد' : 'Confirmed' },
       shipped: { color: 'bg-orange-500', text: language === 'ar' ? 'تم الشحن' : 'Shipped' },
       delivered: { color: 'bg-green-500', text: language === 'ar' ? 'تم التسليم' : 'Delivered' },
     };
-    const config = statusConfig[status];
+    const config = statusConfig[status] || statusConfig.pending;
     return <Badge className={`${config.color} text-white`}>{config.text}</Badge>;
-  };
-
-  const getPaymentMethodText = (method) => {
-    const methods = {
-      bank: language === 'ar' ? 'تحويل بنكي' : 'Bank Transfer',
-      visa: language === 'ar' ? 'فيزا' : 'Visa',
-      cod: language === 'ar' ? 'دفع عند الاستلام' : 'Cash on Delivery',
-    };
-    return methods[method];
   };
 
   return (
@@ -119,20 +91,20 @@ const OrdersManagement = () => {
             </TableHeader>
             <TableBody>
               {orders.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell className="font-medium">#{order.id}</TableCell>
+                <TableRow key={order._id}>
+                  <TableCell className="font-medium">#{order._id}</TableCell>
                   <TableCell>
                     <div>
-                      <div className="font-medium">{order.customerInfo.name}</div>
-                      <div className="text-sm text-amber-600">{order.customerInfo.phone}</div>
+                      <div className="font-medium">{order.user?.first_name || 'Guest'}</div>
+                      <div className="text-sm text-amber-600">{order.user?.email}</div>
                     </div>
                   </TableCell>
-                  <TableCell>{order.total} {language === 'ar' ? 'ر.س' : 'SAR'}</TableCell>
-                  <TableCell>{getPaymentMethodText(order.paymentMethod)}</TableCell>
-                  <TableCell>{getStatusBadge(order.status)}</TableCell>
-                  <TableCell>{order.createdAt.toLocaleDateString('ar-EG')}</TableCell>
+                  <TableCell>{order.totalPrice} {language === 'ar' ? 'ر.س' : 'SAR'}</TableCell>
+                  <TableCell>{order.paymentMethod}</TableCell>
+                  <TableCell>{getStatusBadge(order)}</TableCell>
+                  <TableCell>{new Date(order.createdAt).toLocaleDateString('ar-EG')}</TableCell>
                   <TableCell>
-                    <Select value={order.status} onValueChange={(value) => updateOrderStatus(order.id, value)}>
+                    <Select value={order.status || (order.isDelivered ? 'delivered' : 'pending')} onValueChange={(value) => updateOrderStatus(order._id, value)}>
                       <SelectTrigger className="w-32">
                         <SelectValue />
                       </SelectTrigger>
@@ -163,3 +135,4 @@ const OrdersManagement = () => {
 };
 
 export default OrdersManagement;
+

@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import OrdersManagement from '../components/admin/OrdersManagement';
 import ProductsManagement from '../components/admin/ProductsManagement';
 import SiteSettings from '../components/admin/SiteSettings';
+import AdminOverview from '../components/admin/AdminOverview';
 import { useLanguage } from '../contexts/LanguageContext';
 import { ArrowLeft } from 'lucide-react';
 
@@ -90,8 +91,11 @@ const AdminDashboard = () => {
       </div>
 
       <div className="container mx-auto px-6 py-8">
-        <Tabs defaultValue="orders" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-amber-100">
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 bg-amber-100">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">
+              {language === 'ar' ? 'نظرة عامة' : 'Overview'}
+            </TabsTrigger>
             <TabsTrigger value="orders" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">
               {language === 'ar' ? 'الطلبات' : 'Orders'}
             </TabsTrigger>
@@ -102,6 +106,10 @@ const AdminDashboard = () => {
               {language === 'ar' ? 'الإعدادات' : 'Settings'}
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="overview">
+            <AdminOverview />
+          </TabsContent>
 
           <TabsContent value="orders">
             <OrdersManagement />
