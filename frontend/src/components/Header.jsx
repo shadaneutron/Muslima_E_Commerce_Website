@@ -1,95 +1,61 @@
 import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
+import { ShoppingBag, User, Globe, Menu, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Menu, Globe, Settings } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Link } from 'react-router-dom';
 
 const Header = ({ onCartClick, onMenuClick }) => {
-  const { t, language, setLanguage } = useLanguage();
-  const { items } = useCart();
-  
-  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  
-  const toggleLanguage = () => {
-    setLanguage(language === 'ar' ? 'en' : 'ar');
-  };
-  
-  const scrollToSection = (sectionId) => {
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
-  };
-  
+  const { language, setLanguage } = useLanguage();
+  const { cartItems } = useCart();
+  const { user, logout } = useAuth();
+
+  const cartCount = cartItems?.reduce((acc, item) => acc + item.quantity, 0) || 0;
+
   return (
-    <header className="bg-white border-b border-amber-200 sticky top-0 z-50 shadow-sm">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-amber-900">
-              {language === 'ar' ? 'مُسلمة' : 'Muslima'}
-            </h1>
-          </div>
-          
-          <nav className="hidden md:flex items-center space-x-8 space-x-reverse">
-            <button 
-              onClick={() => scrollToSection('home')}
-              className="text-amber-700 hover:text-amber-900 transition-colors"
-            >
-              {t('nav.home')}
-            </button>
-            <button 
-              onClick={() => scrollToSection('products')}
-              className="text-amber-700 hover:text-amber-900 transition-colors"
-            >
-              {t('nav.products')}
-            </button>
-            <button 
-              onClick={() => scrollToSection('about')}
-              className="text-amber-700 hover:text-amber-900 transition-colors"
-            >
-              {t('nav.about')}
-            </button>
-            <a 
-              href="/admin"
-              className="flex items-center text-amber-700 hover:text-amber-900 transition-colors"
-            >
-              <Settings className="h-4 w-4 mr-1" />
-              {language === 'ar' ? 'لوحة التحكم' : 'Admin'}
-            </a>
-          </nav>
-          
-          <div className="flex items-center space-x-4 space-x-reverse">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleLanguage}
-              className="border-amber-300 text-amber-700 hover:bg-amber-100"
-            >
-              <Globe className="h-4 w-4 mr-1" />
-              {language === 'ar' ? 'EN' : 'ع'}
-            </Button>
-            
-            <Button
-              variant="outline"
-              onClick={onCartClick}
-              className="relative border-amber-300 text-amber-700 hover:bg-amber-100"
-            >
-              <ShoppingCart className="h-5 w-5" />
-              {totalItems > 0 && (
-                <Badge className="absolute -top-2 -right-2 bg-amber-600 text-white text-xs">
-                  {totalItems}
-                </Badge>
-              )}
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onMenuClick}
-              className="md:hidden border-amber-300 text-amber-700 hover:bg-amber-100"
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-          </div>
+    <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-amber-100">
+      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
+        
+        <Link to="/" className="text-3xl font-bold text-amber-900 font-['Tajawal']">
+          {language === 'ar' ? 'مسلمة' : 'MUSLIMA'}
+        </Link>
+
+        <div className="flex items-center gap-2 md:gap-5">
+          <Button variant="ghost" size="icon" onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')} className="text-amber-800">
+            <Globe className="h-5 w-5" />
+          </Button>
+
+          {user ? (
+            <div className="flex items-center gap-3">
+              <span className="hidden md:block font-bold text-amber-950">
+                {/* هنا سيظهر الاسم الحقيقي بدلاً من undefined */}
+                أهلاً، {user.first_name || user.username}
+              </span>
+              <Button variant="ghost" size="icon" onClick={logout} className="text-red-600">
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </div>
+          ) : (
+            <Link to="/login">
+              <Button variant="ghost" size="icon" className="text-amber-800">
+                <User className="h-5 w-5" />
+              </Button>
+            </Link>
+          )}
+
+          <Button onClick={onCartClick} variant="ghost" size="icon" className="relative text-amber-800">
+            <ShoppingBag className="h-5 w-5" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </Button>
+
+          <Button variant="ghost" size="icon" onClick={onMenuClick} className="md:hidden text-amber-800">
+            <Menu className="h-6 w-6" />
+          </Button>
         </div>
       </div>
     </header>

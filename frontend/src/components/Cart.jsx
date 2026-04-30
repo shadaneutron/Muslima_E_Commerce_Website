@@ -2,71 +2,75 @@ import React from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Minus, Plus, X } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingCart } from 'lucide-react';
 
 const Cart = ({ onCheckout }) => {
-  const { items, updateQuantity, removeFromCart, getTotalPrice } = useCart();
-  const { t } = useLanguage();
+  const { cartItems, removeFromCart, addToCart } = useCart();
+  const { language, t } = useLanguage();
 
-  if (items.length === 0) {
+  // الحماية هنا: لو cartItems مش موجودة لأي سبب، نعتبرها مصفوفة فاضية
+  const safeCartItems = cartItems || [];
+
+  const totalPrice = safeCartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  if (safeCartItems.length === 0) {
     return (
-      <Card className="bg-white border-stone-200">
-        <CardHeader>
-          <CardTitle className="text-stone-900">{t('cart.title')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-center text-stone-700 py-8">{t('cart.empty')}</p>
-        </CardContent>
-      </Card>
+      <div className="text-center py-12 flex flex-col items-center gap-4">
+        <ShoppingCart className="h-16 w-16 text-amber-200" />
+        <p className="text-xl text-amber-900 font-medium">
+          {language === 'ar' ? 'سلة التسوق فارغة' : 'Your cart is empty'}
+        </p>
+      </div>
     );
   }
 
   return (
-    <Card className="bg-white border-stone-200">
-      <CardHeader>
-        <CardTitle className="text-stone-900">{t('cart.title')}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {items.map((item) => (
-          <div key={`${item.id}-${item.selectedSize}-${item.selectedColor}`} className="flex items-center space-x-4 rtl:space-x-reverse p-4 border rounded-lg">
-            <img src={item.image} alt={item.name.ar} className="w-16 h-16 object-cover rounded" />
-            <div className="flex-1">
-              <h4 className="font-medium text-stone-900">{item.name.ar}</h4>
-              <p className="text-sm text-stone-700">
-                {t('products.size')}: {item.selectedSize} | {t('products.color')}: {item.selectedColor}
+    <div className="space-y-6 text-[#451a03]">
+      <div className="space-y-4">
+        {safeCartItems.map((item) => (
+          <div key={`${item._id}-${item.size}-${item.color}`} className="flex items-center gap-4 bg-orange-50/50 p-4 rounded-2xl border border-amber-100">
+            <img 
+              src={item.image ? `http://127.0.0.1:8080${item.image}` : '/products/placeholder.svg'} 
+              alt={item.name} 
+              className="w-20 h-20 object-cover rounded-xl" 
+            />
+            
+            <div className="flex-grow">
+              <h4 className="font-bold text-lg">{item.name}</h4>
+              <p className="text-sm text-amber-700">
+                {item.size} | {item.color}
               </p>
-              <p className="text-lg font-bold text-amber-600">
-                {item.price} {t('products.price')}
-              </p>
+              <p className="font-bold text-amber-600">{item.price} ج.م</p>
             </div>
-            <div className="flex items-center space-x-2 rtl:space-x-reverse">
-              <Button variant="outline" size="sm" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
-                <Minus className="h-4 w-4" />
+
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="h-8 w-8 rounded-full border-amber-200"
+                onClick={() => removeFromCart(item._id, item.size, item.color)}
+              >
+                <Trash2 className="h-4 w-4 text-red-500" />
               </Button>
-              <span className="w-8 text-center text-stone-900">{item.quantity}</span>
-              <Button variant="outline" size="sm" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
-                <Plus className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => removeFromCart(item.id)} className="text-red-600 hover:text-red-700">
-                <X className="h-4 w-4" />
-              </Button>
+              <span className="font-bold w-4 text-center">{item.quantity}</span>
             </div>
           </div>
         ))}
-        <div className="border-t pt-4">
-          <div className="flex justify-between items-center text-xl font-bold text-stone-900">
-            <span className="text-stone-900">{t('cart.total')}</span>
-            <span className="text-amber-700">
-              {getTotalPrice()} {t('products.price')}
-            </span>
-          </div>
-          <Button onClick={onCheckout} className="w-full mt-4 bg-amber-600 hover:bg-amber-700" size="lg">
-            {t('cart.checkout')}
-          </Button>
+      </div>
+
+      <div className="border-t border-amber-100 pt-6 space-y-4">
+        <div className="flex justify-between text-xl font-bold text-amber-900">
+          <span>{language === 'ar' ? 'الإجمالي:' : 'Total:'}</span>
+          <span>{totalPrice} ج.م</span>
         </div>
-      </CardContent>
-    </Card>
+        <Button 
+          onClick={onCheckout}
+          className="w-full bg-amber-600 hover:bg-amber-700 text-white h-14 text-lg font-bold shadow-md"
+        >
+          {language === 'ar' ? 'الذهاب لإتمام الطلب' : 'Proceed to Checkout'}
+        </Button>
+      </div>
+    </div>
   );
 };
 

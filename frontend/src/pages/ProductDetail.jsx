@@ -1,193 +1,98 @@
-import React, { useMemo, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { products } from '../data/products';
-import { useLanguage, LanguageProvider } from '../contexts/LanguageContext';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useCart } from '../contexts/CartContext';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import { ArrowRight, ArrowLeft, ShoppingBag } from 'lucide-react';
 
-const FallbackImg = '/products/placeholder.svg';
-
-const ZoomImage = ({ src, alt }) => {
-  const [pos, setPos] = useState({ x: 50, y: 50 });
-  const [zoom, setZoom] = useState(false);
-  const onMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setPos({ x, y });
-  };
-  return (
-    <div
-      className="relative overflow-hidden rounded-lg border bg-white"
-      onMouseEnter={() => setZoom(true)}
-      onMouseLeave={() => setZoom(false)}
-      onMouseMove={onMove}
-    >
-      <img
-        src={src}
-        alt={alt}
-        className="w-full h-[420px] object-cover"
-        onError={(e) => { e.currentTarget.src = FallbackImg; }}
-      />
-      {zoom && (
-        <div
-          className="pointer-events-none absolute inset-0 rounded-lg"
-          style={{
-            backgroundImage: `url(${src})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: '200%',
-            backgroundPosition: `${pos.x}% ${pos.y}%`,
-          }}
-        />
-      )}
-    </div>
-  );
-};
-
-const ProductDetailContent = () => {
+const ProductDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { language, t } = useLanguage();
   const { addToCart } = useCart();
-  const product = useMemo(() => products.find(p => p.id === id), [id]);
-  const images = product?.images && product.images.length > 0 ? product.images : [product?.image].filter(Boolean);
-  const [selectedImage, setSelectedImage] = useState(images[0]);
-  const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0]);
-  const [selectedColor, setSelectedColor] = useState(product?.colors?.[0]);
+  const { toast } = useToast();
   
-  if (!product) {
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        // تأكدي من البورت 8080 كما حددنا في الباك أند
+        const { data } = await axios.get(`http://127.0.0.1:8080/api/products/${id}/`);
+        setProduct(data);
+        setLoading(false);
+      } catch (err) {
+        console.error("خطأ في جلب المنتج:", err);
+        setError(true);
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [id]);
+
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card>
-          <CardHeader>
-            <CardTitle>المنتج غير موجود</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Link to="/" className="text-amber-700 underline">العودة للرئيسية</Link>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-xl font-bold text-amber-900 animate-pulse">جاري تحميل المنتج...</div>
       </div>
     );
   }
-  
-  const add = () => {
-    addToCart({
-      ...product,
-      quantity: 1,
-      selectedSize,
-      selectedColor
-    });
-  };
-  
-  return (
-    <div className="min-h-screen bg-amber-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <Link to="/" className="text-amber-700 underline">← العودة</Link>
-        </div>
-        
-        <div className="grid md:grid-cols-2 gap-8">
-          <div>
-            <ZoomImage src={selectedImage} alt={product.name[language]} />
-            <div className="mt-3 flex gap-3">
-              {images.map((img) => (
-                <button
-                  key={img}
-                  className={`h-20 w-20 rounded-lg border overflow-hidden ${selectedImage === img ? 'ring-2 ring-amber-600' : ''}`}
-                  onClick={() => setSelectedImage(img)}
-                >
-                  <img src={img} alt="thumb" className="h-full w-full object-cover" onError={(e) => { e.currentTarget.src = FallbackImg; }} />
-                </button>
-              ))}
-            </div>
-          </div>
-          
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-stone-900 mb-3">{product.name[language]}</h1>
-            <p className="text-stone-700 mb-4">{product.description[language]}</p>
-            <p className="text-2xl font-bold text-amber-700 mb-6">{product.price} {t('products.price')}</p>
-            
-            <div className="space-y-4 mb-6">
-              <div>
-                <div className="mb-2 text-stone-800">{t('products.size')}</div>
-                <div className="flex flex-wrap gap-2">
-                  {product.sizes.map((size) => (
-                    <Button
-                      key={size}
-                      size="sm"
-                      variant={selectedSize === size ? "default" : "outline"}
-                      className={selectedSize === size ? "bg-amber-600 hover:bg-amber-700" : "border-amber-300 text-amber-700"}
-                      onClick={() => setSelectedSize(size)}
-                    >
-                      {size}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <div className="mb-2 text-stone-800">{t('products.color')}</div>
-                <div className="flex flex-wrap gap-2">
-                  {product.colors.map((color) => (
-                    <Button
-                      key={color}
-                      size="sm"
-                      variant={selectedColor === color ? "default" : "outline"}
-                      className={selectedColor === color ? "bg-amber-600 hover:bg-amber-700" : "border-amber-300 text-amber-700"}
-                      onClick={() => setSelectedColor(color)}
-                    >
-                      {color}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-            
-            <Button className="bg-amber-600 hover:bg-amber-700 w-full mb-6" onClick={add}>
-              {t('products.addToCart')}
-            </Button>
-            
-            <Tabs defaultValue="details" className="space-y-4">
-              <TabsList className="bg-amber-100">
-                <TabsTrigger value="details" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">التفاصيل</TabsTrigger>
-                <TabsTrigger value="specs" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">المواصفات</TabsTrigger>
-                <TabsTrigger value="policy" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">الشحن والاسترجاع</TabsTrigger>
-              </TabsList>
-              <TabsContent value="details" className="bg-white border rounded-lg p-4 text-stone-800">
-                <ul className="list-disc pr-6 space-y-2">
-                  <li>قماش فاخر وخياطة متقنة</li>
-                  <li>راحة في الارتداء وتصميم عملي</li>
-                  <li>ألوان متعددة لتناسب ذوقك</li>
-                </ul>
-              </TabsContent>
-              <TabsContent value="specs" className="bg-white border rounded-lg p-4 text-stone-800">
-                <ul className="list-disc pr-6 space-y-2">
-                  <li>الفئة: {product.category}</li>
-                  <li>المقاسات المتاحة: {product.sizes.join(', ')}</li>
-                  <li>الألوان: {product.colors.join(', ')}</li>
-                </ul>
-              </TabsContent>
-              <TabsContent value="policy" className="bg-white border rounded-lg p-4 text-stone-800">
-                <p className="mb-2">الشحن داخل المملكة خلال 2-4 أيام عمل.</p>
-                <p className="mb-2">الاسترجاع خلال 14 يوماً بشرط عدم استخدام المنتج وحفظ الفاتورة.</p>
-                <p>لمزيد من المعلومات، تواصلي معنا عبر البريد: info@muslima.com</p>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </div>
+
+  if (error || !product) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+        <h2 className="text-2xl font-bold text-red-600 mb-4">عذراً، المنتج غير موجود</h2>
+        <Button onClick={() => navigate('/')} className="bg-amber-600">العودة للمتجر</Button>
       </div>
+    );
+  }
+
+  const imageUrl = product.image ? `http://127.0.0.1:8080${product.image}` : '/products/placeholder.svg';
+
+  return (
+    <div className="min-h-screen bg-white" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+      <Header />
+      <main className="container mx-auto px-4 py-8 md:py-16">
+        <Button variant="ghost" onClick={() => navigate(-1)} className="mb-8 text-amber-900">
+          {language === 'ar' ? <ArrowRight className="ml-2 h-4 w-4" /> : <ArrowLeft className="mr-2 h-4 w-4" />}
+          {t('common.back')}
+        </Button>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="rounded-2xl overflow-hidden bg-gray-100 shadow-sm">
+            <img src={imageUrl} alt={product.name} className="w-full h-[500px] object-cover" />
+          </div>
+
+          <div className="flex flex-col justify-center">
+            <h1 className="text-4xl font-bold text-amber-900 mb-4">{product.name}</h1>
+            <p className="text-2xl font-bold text-amber-600 mb-6">{product.price} {t('products.price')}</p>
+            <p className="text-gray-600 text-lg mb-8 leading-relaxed">{product.description}</p>
+            
+            <Button 
+              size="lg" 
+              onClick={() => {
+                addToCart(product, 'Standard', 'Default');
+                toast({ title: t('products.added') });
+              }}
+              disabled={product.countInStock <= 0}
+              className="bg-amber-600 hover:bg-amber-700 text-white h-14 text-lg"
+            >
+              <ShoppingBag className="ml-2 h-5 w-5" />
+              {product.countInStock > 0 ? t('products.addToCart') : t('products.outOfStock')}
+            </Button>
+          </div>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };
 
-import { CartProvider } from '../contexts/CartContext';
-export default function ProductDetail() {
-  return (
-    <LanguageProvider>
-      <CartProvider>
-        <ProductDetailContent />
-      </CartProvider>
-    </LanguageProvider>
-  );
-}
+export default ProductDetail;
