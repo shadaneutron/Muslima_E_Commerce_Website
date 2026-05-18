@@ -226,7 +226,7 @@ def addOrderItems(request):
                     name=product.name,
                     qty=item['qty'],
                     price=item['price'],
-                    image=str(product.image) if product.image else '',
+                    image=product.image.url if product.image and hasattr(product.image, 'url') else (str(product.image) if product.image else ''),
                 )
                 if product.countInStock >= item['qty']:
                     product.countInStock -= item['qty']

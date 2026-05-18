@@ -50,9 +50,17 @@ const OrderDetail = () => {
   }, [id, user, token, navigate]);
 
   const getImg = (url) => {
-    if (!url) return 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=100&q=75';
+    if (!url) return 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=200&q=80';
     if (url.startsWith('http')) return url;
-    return `${API}${url}`;
+    let cleanPath = url;
+    if (!cleanPath.startsWith('/media/') && !cleanPath.startsWith('media/')) {
+      cleanPath = `/media/${cleanPath}`;
+    } else if (cleanPath.startsWith('media/')) {
+      cleanPath = `/${cleanPath}`;
+    }
+    const apiBase = API.endsWith('/') ? API.slice(0, -1) : API;
+    const finalPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
+    return `${apiBase}${finalPath}`;
   };
 
   // Determine stage completion based on status

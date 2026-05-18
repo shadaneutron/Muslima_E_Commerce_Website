@@ -73,9 +73,31 @@ class ShippingAddressSerializer(serializers.ModelSerializer):
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = OrderItem
         fields = '__all__'
+
+    def get_image(self, obj):
+        if not obj.image:
+            return None
+        
+        # If it's already an absolute URL
+        if obj.image.startswith('http://') or obj.image.startswith('https://'):
+            return obj.image
+            
+        # Clean relative path
+        path = obj.image
+        if not path.startswith('/media/') and not path.startswith('media/'):
+            path = f"/media/{path}"
+        elif path.startswith('media/'):
+            path = f"/{path}"
+            
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(path)
+        return path
 
 
 class OrderSerializer(serializers.ModelSerializer):

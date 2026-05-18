@@ -15,7 +15,15 @@ const Cart = ({ onCheckout }) => {
   const getImg = (item) => {
     if (!item.image) return 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=200&q=60';
     if (item.image.startsWith('http')) return item.image;
-    return `${API}${item.image}`;
+    let cleanPath = item.image;
+    if (!cleanPath.startsWith('/media/') && !cleanPath.startsWith('media/')) {
+      cleanPath = `/media/${cleanPath}`;
+    } else if (cleanPath.startsWith('media/')) {
+      cleanPath = `/${cleanPath}`;
+    }
+    const apiBase = API.endsWith('/') ? API.slice(0, -1) : API;
+    const finalPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
+    return `${apiBase}${finalPath}`;
   };
 
   if (!cartItems || cartItems.length === 0) {

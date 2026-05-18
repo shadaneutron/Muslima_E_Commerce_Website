@@ -9,6 +9,20 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle, MapPin, ShoppingBag, ChevronRight, ChevronLeft, Package, CreditCard, Phone } from 'lucide-react';
 
+const getImg = (url) => {
+  if (!url) return 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=200&q=60';
+  if (url.startsWith('http')) return url;
+  let cleanPath = url;
+  if (!cleanPath.startsWith('/media/') && !cleanPath.startsWith('media/')) {
+    cleanPath = `/media/${cleanPath}`;
+  } else if (cleanPath.startsWith('media/')) {
+    cleanPath = `/${cleanPath}`;
+  }
+  const apiBase = API.endsWith('/') ? API.slice(0, -1) : API;
+  const finalPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
+  return `${apiBase}${finalPath}`;
+};
+
 const STEPS = [
   { id: 1, label: 'مراجعة السلة', icon: ShoppingBag },
   { id: 2, label: 'بيانات الشحن', icon: MapPin },
@@ -55,7 +69,7 @@ const CartReview = ({ cartItems, onNext }) => (
       {cartItems.map((item, i) => (
         <div key={i} className="flex items-center gap-4 p-4 bg-white border border-[var(--border-color)]">
           <img
-            src={item.image?.startsWith('http') ? item.image : `${API}${item.image || ''}`}
+            src={getImg(item.image)}
             alt={item.name}
             className="w-20 h-24 object-cover bg-[var(--bg-color)]"
             onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=200&q=60'; }}
@@ -262,12 +276,25 @@ const OrderSummary = ({ cartItems, address, city, phone, governorate, itemsPrice
         <CreditCard className="w-4 h-4 text-[var(--gold-accent)]" />
         ملخص الفاتورة
       </h4>
-      {cartItems.map((item, i) => (
-        <div key={i} className="flex justify-between text-sm text-[var(--soft-brown)]">
-          <span className="uppercase tracking-wider">{item.name} <span className="text-xs opacity-70">× {item.quantity}</span></span>
-          <span className="font-semibold text-[var(--text-dark)]">{(item.price * item.quantity).toFixed(0)} ج.م</span>
-        </div>
-      ))}
+      <div className="space-y-3">
+        {cartItems.map((item, i) => (
+          <div key={i} className="flex items-center justify-between text-sm text-[var(--soft-brown)] gap-4 border-b border-[var(--border-color)] pb-3 last:border-0 last:pb-0">
+            <div className="flex items-center gap-3">
+              <img
+                src={getImg(item.image)}
+                alt={item.name}
+                className="w-12 h-16 object-cover bg-[var(--bg-color)] border border-[var(--border-color)]"
+                onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=200&q=60'; }}
+              />
+              <div>
+                <p className="font-semibold text-[var(--text-dark)] uppercase tracking-wider text-xs">{item.name}</p>
+                <p className="text-[var(--soft-brown)]/80 text-[10px] tracking-widest">الكمية: {item.quantity}</p>
+              </div>
+            </div>
+            <span className="font-semibold text-[var(--text-dark)]">{(item.price * item.quantity).toFixed(0)} ج.م</span>
+          </div>
+        ))}
+      </div>
       <div className="border-t border-[var(--border-color)] pt-4 space-y-3 mt-4">
         <div className="flex justify-between text-xs text-[var(--soft-brown)] font-light uppercase tracking-widest">
           <span>المنتجات</span>
