@@ -1,269 +1,291 @@
-# Muslima Boutique (Modest Fashion E-Commerce)
+# Muslima Boutique — Modest Fashion E-Commerce
 
-Muslima Boutique is a handcrafted, premium, and fully bilingual (Arabic/English) modest fashion e-commerce storefront. Designed with a luxury visual design system, the platform features a boutique aesthetic tailored to modesty conventions, high-end abayas, and elegant modest wear. 
+Muslima Boutique is a premium full-stack modest fashion e-commerce platform focused on elegant Islamic women's clothing including abayas, hijabs, niqabs, skirts, and modest wear collections.
 
-The application is built on a split modern architecture consisting of a high-performance **Vite + React** client and a robust **Django REST Framework (DRF)** web API, supporting a dual-database design (PostgreSQL for production, SQLite for developer mode).
-
----
-
-## Key Features
-
-- **Bilingual & Bidirectional (RTL/LTR)**: Multi-language context seamlessly toggles between Arabic (Tajawal font, right-to-left layout) and English (Inter font, left-to-right layout) automatically.
-- **Dual-Database Adaptability**: Dynamically queries standard connection strings (`DATABASE_URL`) or environment coordinates (`DB_HOST`) to target a production PostgreSQL instance (e.g. Supabase, Render, Railway), falling back seamlessly to local `db.sqlite3` for development.
-- **Secure Authentication**: Production-ready JWT authentication (`SimpleJWT`) with local cookie state and secure header transport.
-- **Curated Storefront & Checkout**: Multi-attribute cart (size/color), real-time wishlist tracker, shipment cost calculators, complimentary shipping progress meters, and billing invoices.
-- **Detailed Order Tracking**: Visually striking timeline showing fulfillment stages (`Pending`, `Processing`, `Shipped`, `Delivered`) along with invoices.
-- **Comprehensive Admin Dashboard**: Full admin oversight over sales statistics, product CRUD (inventory levels, price points, and visual asset associations), category configurations, and order fulfillment controls.
+The platform is designed with a luxury boutique aesthetic using a modern React + Django architecture, featuring bilingual Arabic/English support, JWT authentication, wishlist management, checkout flow, order tracking, and a complete admin dashboard.
 
 ---
 
-## Visual Design System & Aesthetics
+# Live Demo
 
-Muslima Boutique employs a rich color palette and modern typography tokens:
-- **Primary Color**: Dark beige (`#F5EBE6`) and rich cream backgrounds.
-- **Secondary Accent**: Premium boutique gold (`#D4AF37`) for highlights, price indicators, and visual active state signals.
-- **Contrast Core**: Charcoal dark text (`#2A2321`) for sophisticated typography contrast.
-- **Typography**: 
-  - Arabic: **Tajawal** (custom Google Font) for fluid, elegant calligraphic script.
-  - English: **Inter** for clean, modern uppercase branding headers.
+### Frontend Website
+
+[Add your deployed Vercel link here]
+
+Example:
+https://muslima-boutique.vercel.app
 
 ---
 
-## Directory Structure
+### Backend API
 
-```
-Muslima_E_Commerce/
-├── frontend/                # Vite + React Client
+[Add your deployed backend link here]
+
+Example:
+https://muslima-api.onrender.com
+
+---
+
+# Screenshots
+
+## Homepage
+
+<img width="2559" height="1273" alt="image" src="https://github.com/user-attachments/assets/d03e9c0e-6b86-4f22-bb51-d2469ae05f82" />
+
+---
+
+## Products Page
+
+<img width="2559" height="1270" alt="image" src="https://github.com/user-attachments/assets/c4bb3657-022d-4ae7-ac50-13d76ebaa94a" />
+
+
+---
+
+## Product Details
+
+<img width="2559" height="1269" alt="image" src="https://github.com/user-attachments/assets/aa8a19f3-9cf6-4555-8ed3-2ed02ca3dce9" />
+
+---
+
+## Checkout
+<img width="2558" height="1111" alt="image" src="https://github.com/user-attachments/assets/f02d8642-07ee-45fd-aa83-7cc5d33fb669" />
+
+---
+
+## Admin Dashboard
+<img width="1453" height="982" alt="image" src="https://github.com/user-attachments/assets/0f4d22f6-e3c5-4640-ae79-3d9969b0034d" />
+
+
+---
+
+# Features
+
+* Full-stack React + Django architecture
+* JWT Authentication
+* Arabic / English bilingual support
+* RTL / LTR layouts
+* Wishlist system
+* Dynamic categories
+* Search & filtering
+* Checkout & shipping system
+* Egyptian governorates shipping support
+* Order tracking system
+* Django admin dashboard
+* Responsive modern UI
+* Luxury modest fashion design system
+* Production-ready API architecture
+
+---
+
+# Tech Stack
+
+## Frontend
+
+* React
+* Vite
+* Tailwind CSS
+* shadcn/ui
+* React Router
+* React Query
+* Axios
+
+## Backend
+
+* Django
+* Django REST Framework
+* SimpleJWT Authentication
+* PostgreSQL / SQLite
+* Django Admin
+
+---
+
+# Project Structure
+
+```bash
+Muslima_E_Commerce_Website/
+│
+├── frontend/
 │   ├── src/
-│   │   ├── assets/          # Global styles & fonts
-│   │   ├── components/      # UI components (Header, Footer, ProductCard, Cart, Admin panels)
-│   │   ├── contexts/        # React Context Providers (Auth, Cart, Language, Wishlist)
-│   │   ├── hooks/           # Custom state hooks (use-toast)
-│   │   ├── pages/           # Page containers (Wishlist, ProductDetail, OrderDetail, Checkout)
-│   │   ├── config.js        # Centralized API base URL config
-│   │   └── main.jsx         # App bootstrapping
-│   ├── index.html
-│   ├── tailwind.config.js
+│   ├── public/
 │   └── package.json
 │
-├── backend/                 # Django Root Application
-│   ├── settings.py          # Production-hardened settings (Allowed Hosts, CORS, DB url parser)
-│   ├── urls.py              # Root endpoint routing
-│   └── wsgi.py / asgi.py
+├── backend/
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
 │
-├── store/                   # Django Boutique Business Logic
-│   ├── models.py            # Complete Database Schemas (Category, Product, Order, OrderItem, Review)
-│   ├── views.py             # DRF ViewSets & REST API endpoints
-│   ├── serializers.py       # JSON model mappings
-│   ├── urls.py              # Store-specific API routes
-│   └── seed.py              # Boutique catalog seeder
+├── store/
+│   ├── models.py
+│   ├── views.py
+│   ├── serializers.py
+│   └── urls.py
 │
-└── screenshots/             # Interface visual markers & portfolios
+├── screenshots/
+│
+└── README.md
 ```
 
 ---
 
-## Database Architecture (Schema Entity Model)
+# API Endpoints
 
-The database schema is highly optimized for retail operations:
+## Authentication
 
-```mermaid
-erDiagram
-    CATEGORY ||--o{ PRODUCT : contains
-    USER ||--o{ ORDER : places
-    USER ||--o{ REVIEW : writes
-    PRODUCT ||--o{ ORDER-ITEM : "purchased-in"
-    PRODUCT ||--o{ REVIEW : "reviewed-under"
-    ORDER ||--|{ ORDER-ITEM : includes
+* POST `/api/users/login/`
+* POST `/api/users/register/`
 
-    CATEGORY {
-        int _id PK
-        string name
-        string slug
-        datetime createdAt
-    }
+## Products
 
-    PRODUCT {
-        int _id PK
-        int user_id FK
-        string name
-        string image
-        string brand
-        string category FK
-        string description
-        float rating
-        int numReviews
-        float price
-        int countInStock
-        datetime createdAt
-    }
+* GET `/api/products/`
+* GET `/api/products/:id/`
 
-    ORDER {
-        int _id PK
-        int user_id FK
-        string paymentMethod
-        float taxPrice
-        float shippingPrice
-        float totalPrice
-        boolean isPaid
-        datetime paidAt
-        boolean isDelivered
-        datetime deliveredAt
-        string status
-        string address
-        string city
-        string postalCode
-        string country
-        string phone
-        datetime createdAt
-    }
+## Categories
 
-    ORDER-ITEM {
-        int _id PK
-        int product_id FK
-        int order_id FK
-        string name
-        int qty
-        float price
-        string image
-        string size
-        string color
-    }
+* GET `/api/categories/`
 
-    REVIEW {
-        int _id PK
-        int product_id FK
-        int user_id FK
-        string name
-        int rating
-        string comment
-        datetime createdAt
-    }
-```
+## Orders
+
+* POST `/api/orders/add/`
+* GET `/api/orders/myorders/`
+* GET `/api/orders/:id/`
+
+## Wishlist
+
+* GET `/api/wishlist/`
 
 ---
 
-## API Endpoints Map
+# Local Installation
 
-### 1. User & Authentication
-- `POST /api/users/login/` - Authenticate customer & generate access JWT.
-- `POST /api/users/register/` - Register new boutique profile.
+## Backend Setup
 
-### 2. Product Catalog
-- `GET /api/products/` - Query and search product list.
-- `GET /api/products/:id/` - Fetch product spec details.
-- `POST /api/products/` - Create new catalog item (Admin).
-- `PUT /api/products/:id/` - Update product inventory & details (Admin).
-- `DELETE /api/products/:id/` - Remove catalog item (Admin).
-
-### 3. Categories
-- `GET /api/categories/` - Retrieve custom boutique categories.
-
-### 4. Orders & Fulfillment
-- `POST /api/orders/add/` - Submit boutique order with itemized cart.
-- `GET /api/orders/myorders/` - Retrieve active customer's order history.
-- `GET /api/orders/:id/` - Track delivery details & review billing receipt.
-- `PUT /api/orders/:id/deliver/` - Mark package as out for delivery / delivered (Admin).
-
----
-
-## Setup & Local Installation
-
-### Prerequisites
-- Python 3.10+
-- Node.js 18+
-
-### 1. Backend API Server Setup
-Clone the repository and access the backend space:
 ```bash
-git clone https://github.com/shadaneutron/Muslima_E_Commerce_Website.git
-cd Muslima_E_Commerce_Website
-```
-
-Create a virtual environment and activate it:
-```bash
-# Windows
 python -m venv venv
 venv\Scripts\activate
 
-# macOS / Linux
-python3 -m venv venv
-source venv/bin/activate
-```
+pip install -r requirements.txt
 
-Install backend dependencies:
-```bash
-pip install django djangorestframework djangorestframework-simplejwt django-cors-headers django-filter python-dotenv psycopg2-binary
-```
-
-Configure backend environment `.env`:
-Create a `.env` file in the project root containing:
-```env
-DEBUG=True
-SECRET_KEY=your-secure-local-secret-key-goes-here
-ALLOWED_HOSTS=127.0.0.1,localhost
-USE_SQLITE=True
-```
-
-Run database migrations:
-```bash
 python manage.py migrate
-```
 
-Seed the boutique catalog:
-```bash
-python manage.py runscript seed
-```
-
-Start the API development server:
-```bash
 python manage.py runserver 8080
 ```
-The backend API will run locally at `http://127.0.0.1:8080`.
+
+Backend runs on:
+
+```bash
+http://127.0.0.1:8080
+```
 
 ---
 
-### 2. Frontend React Client Setup
-In a new terminal window, navigate to the frontend directory:
+## Frontend Setup
+
 ```bash
 cd frontend
-```
 
-Install packages:
-```bash
 npm install
-```
 
-Start the Vite development web server:
-```bash
 npm run dev
 ```
-Open your browser and navigate to `http://localhost:5173`.
+
+Frontend runs on:
+
+```bash
+http://localhost:5173
+```
 
 ---
 
-## Production Deployment Guide
+# Environment Variables
 
-### Frontend (Vercel)
-Vite works out-of-the-box on Vercel:
-1. Link your GitHub repository to Vercel.
-2. Select `/frontend` as the **Root Directory**.
-3. Set the **Framework Preset** to `Vite`.
-4. Configure Environment Variables in Vercel Dashboard:
-   - `VITE_API_URL`: Your deployed backend base URL (e.g. `https://muslima-api.onrender.com`).
-5. Click **Deploy**.
+## Frontend `.env`
 
-### Backend API (Render / Railway)
-To deploy the Python Django service:
-1. Connect your repository to Render or Railway as a **Web Service**.
-2. Configure **Environment Variables** in the dashboard:
-   - `DEBUG`: `False`
-   - `SECRET_KEY`: A highly secure random production secret key.
-   - `ALLOWED_HOSTS`: Your deployed backend domain (e.g., `muslima-api.onrender.com`).
-   - `CORS_ALLOWED_ORIGINS`: Your Vercel frontend URL (e.g., `https://muslima-boutique.vercel.app`).
-   - `DATABASE_URL`: Connection string provided by your managed PostgreSQL database (e.g., Supabase, Neon).
-3. Set **Start Command**:
-   ```bash
-   gunicorn backend.wsgi:application
-   ```
-4. Click **Deploy**.
+```env
+VITE_API_URL=http://127.0.0.1:8080
+```
+
+---
+
+## Backend `.env`
+
+```env
+DEBUG=True
+SECRET_KEY=your_secret_key
+ALLOWED_HOSTS=127.0.0.1,localhost
+```
+
+---
+
+# Deployment
+
+## Frontend Deployment (Vercel)
+
+* Import GitHub repository into Vercel
+* Set Root Directory:
+
+```bash
+frontend
+```
+
+* Add Environment Variable:
+
+```env
+VITE_API_URL=https://your-backend-url.onrender.com
+```
+
+---
+
+## Backend Deployment (Render / Railway)
+
+Required Environment Variables:
+
+```env
+DEBUG=False
+SECRET_KEY=your_production_secret
+ALLOWED_HOSTS=your-backend-domain.onrender.com
+DATABASE_URL=your_postgresql_url
+```
+
+Start Command:
+
+```bash
+gunicorn backend.wsgi:application
+```
+
+---
+
+# Admin Dashboard
+
+Admin panel available at:
+
+```bash
+http://127.0.0.1:8080/admin
+```
+
+The dashboard allows:
+
+* product management
+* category management
+* order tracking
+* order status updates
+* customer reviews management
+
+---
+
+# Future Improvements
+
+* Product variants (size/color)
+* Online payment integration
+* Advanced analytics dashboard
+* Email notifications
+* Coupons & discount system
+* Product recommendations
+
+---
+
+# Author
+
+Developed by Shada Khaled
+
+GitHub:
+https://github.com/shadaneutron
