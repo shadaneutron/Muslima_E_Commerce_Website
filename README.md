@@ -30,30 +30,32 @@ https://muslima-api.onrender.com
 
 ## Homepage
 
-<img width="2559" height="1273" alt="image" src="https://github.com/user-attachments/assets/d03e9c0e-6b86-4f22-bb51-d2469ae05f82" />
+
 
 ---
 
 ## Products Page
 
-<img width="2559" height="1270" alt="image" src="https://github.com/user-attachments/assets/c4bb3657-022d-4ae7-ac50-13d76ebaa94a" />
+<img width="2559" height="1269" alt="Screenshot 2026-05-18 224110" src="https://github.com/user-attachments/assets/9821b212-11ed-412f-9b32-adac996e4481" />
 
 
 ---
 
 ## Product Details
 
-<img width="2559" height="1269" alt="image" src="https://github.com/user-attachments/assets/aa8a19f3-9cf6-4555-8ed3-2ed02ca3dce9" />
+
 
 ---
 
 ## Checkout
-<img width="2558" height="1111" alt="image" src="https://github.com/user-attachments/assets/f02d8642-07ee-45fd-aa83-7cc5d33fb669" />
+<img width="2559" height="1234" alt="Screenshot 2026-05-18 224248" src="https://github.com/user-attachments/assets/8b91995a-38c0-49c2-bdf9-8f28fa517df0" />
+<img width="2558" height="1111" alt="Screenshot 2026-05-18 224332" src="https://github.com/user-attachments/assets/1da236af-bfe9-4c71-889b-0175081be31b" />
+
 
 ---
 
 ## Admin Dashboard
-<img width="1453" height="982" alt="image" src="https://github.com/user-attachments/assets/0f4d22f6-e3c5-4640-ae79-3d9969b0034d" />
+<img width="1453" height="982" alt="Screenshot 2026-05-18 223456" src="https://github.com/user-attachments/assets/df332eef-cebe-4632-a61e-8ab5f9d5db83" />
 
 
 ---
@@ -126,6 +128,85 @@ Muslima_E_Commerce_Website/
 ```
 
 ---
+# Database Schema
+
+```mermaid
+erDiagram
+
+    USER ||--o{ ORDER : places
+    USER ||--o{ REVIEW : writes
+    USER ||--o{ WISHLIST : saves
+
+    CATEGORY ||--o{ PRODUCT : contains
+
+    PRODUCT ||--o{ REVIEW : receives
+    PRODUCT ||--o{ ORDER_ITEM : included_in
+    PRODUCT ||--o{ WISHLIST : saved_in
+
+    ORDER ||--o{ ORDER_ITEM : contains
+    ORDER ||--|| SHIPPING_ADDRESS : ships_to
+
+    GOVERNORATE ||--o{ SHIPPING_ADDRESS : used_for
+
+    USER {
+        int id
+        string username
+        string email
+        string password
+    }
+
+    CATEGORY {
+        int id
+        string name
+        string slug
+        string image
+    }
+
+    PRODUCT {
+        int id
+        string name
+        decimal price
+        string image
+        string brand
+        int stock
+        float rating
+    }
+
+    REVIEW {
+        int id
+        int rating
+        string comment
+    }
+
+    ORDER {
+        int id
+        decimal totalPrice
+        string paymentMethod
+        string status
+        boolean isPaid
+    }
+
+    ORDER_ITEM {
+        int qty
+        decimal price
+    }
+
+    SHIPPING_ADDRESS {
+        string address
+        string city
+        string phone
+    }
+
+    GOVERNORATE {
+        string name
+        decimal shipping_cost
+    }
+
+    WISHLIST {
+        int id
+    }
+```
+
 
 # API Endpoints
 
