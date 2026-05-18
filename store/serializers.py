@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import Product, Category, Order, OrderItem, ShippingAddress
+from .models import Product, Category, Order, OrderItem, ShippingAddress, Wishlist, Governorate
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -21,18 +21,52 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='_id', read_only=True)
+
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ['id', '_id', 'name', 'slug', 'image']
+
+
+class SmartImageField(serializers.Field):
+    """Returns the image as a raw URL if it starts with http, else uses the default image URL."""
+    def to_representation(self, value):
+        if not value:
+            return None
+        name = str(value.name) if hasattr(value, 'name') else str(value)
+        if name.startswith('http://') or name.startswith('https://'):
+            return name
+        # Standard file-based image
+        if value:
+            request = self.context.get('request')
+            url = value.url
+            if request:
+                return request.build_absolute_uri(url)
+            return url
+        return None
+
+    def to_internal_value(self, data):
+        return data
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    image = SmartImageField(required=False, allow_null=True)
+    category = CategorySerializer(read_only=True)
+
     class Meta:
         model = Product
         fields = '__all__'
 
 
+class GovernorateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Governorate
+        fields = '__all__'
+
+
 class ShippingAddressSerializer(serializers.ModelSerializer):
+    governorate_name = serializers.CharField(source='governorate.name', read_only=True)
+
     class Meta:
         model = ShippingAddress
         fields = '__all__'
@@ -64,3 +98,12 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def get_user(self, obj):
         return UserSerializer(obj.user, many=False).data
+
+
+class WishlistSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+    product_id = serializers.IntegerField(write_only=True, source='product.pk')
+
+    class Meta:
+        model = Wishlist
+        fields = ['id', 'product', 'product_id', 'addedAt']

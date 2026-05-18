@@ -1,104 +1,156 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
-import Header from '../components/Header';
+import { Eye, EyeOff, UserPlus } from 'lucide-react';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
+  const [loading, setLoading] = useState(false);
   
-  const { register } = useAuth();
+  const { register, user } = useAuth();
+  const { t, isRTL } = useLanguage();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => { if (user) navigate('/'); }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       return toast({ 
-        title: "خطأ", 
-        description: "كلمات المرور غير متطابقة", 
+        title: isRTL ? "خطأ" : "Error", 
+        description: isRTL ? "كلمات المرور غير متطابقة" : "Passwords do not match", 
         variant: "destructive" 
       });
     }
 
+    setLoading(true);
     const result = await register(name, email, password);
+    setLoading(false);
+    
     if (result.success) {
-      toast({ title: "تم إنشاء الحساب بنجاح!", description: "يمكنكِ الآن تسجيل الدخول." });
+      toast({ 
+        title: isRTL ? "تم إنشاء الحساب بنجاح!" : "Account created successfully!", 
+        description: isRTL ? "يمكنكِ الآن تسجيل الدخول." : "You can now log in." 
+      });
       navigate('/login');
     } else {
-      toast({ title: "خطأ", description: result.message, variant: "destructive" });
+      toast({ title: isRTL ? "خطأ" : "Error", description: result.message, variant: "destructive" });
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF9]">
-      <Header />
-      <div className="flex items-center justify-center py-16 px-4">
-        <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md border border-amber-100">
-          <h2 className="text-3xl font-bold text-amber-900 text-center mb-8 font-['Tajawal']">إنشاء حساب جديد</h2>
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-amber-900 mb-1 font-medium">الاسم بالكامل</label>
-              <Input 
-                type="text" 
-                placeholder="أدخلي اسمكِ" 
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
-                required 
-                className="text-amber-950 bg-white border-amber-200 h-12 placeholder:text-gray-400"
-              />
-            </div>
+    <div className="min-h-screen flex selection:bg-[var(--gold-accent)] selection:text-[var(--text-dark)]" dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* Left: Image Panel (desktop only) */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[var(--text-dark)]">
+        <div className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1541216970279-affbfdd55aa8?w=800&q=80)' }}></div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-white text-center z-10">
+          <div className="w-20 h-20 border border-[var(--gold-accent)] flex items-center justify-center mb-8">
+            <span className={`text-4xl font-bold text-[var(--gold-accent)] ${isRTL ? "font-['Cairo']" : "font-['Inter']"}`}>م</span>
+          </div>
+          <h1 className={`text-5xl font-bold mb-6 tracking-widest uppercase text-white ${isRTL ? "font-['Cairo']" : "font-['Inter']"}`}>
+            {t('site.name')}
+          </h1>
+          <p className="text-white/60 text-lg font-light tracking-widest uppercase max-w-sm">{t('site.tagline')}</p>
+          <div className="mt-16 flex flex-col gap-4 text-xs font-semibold tracking-widest uppercase text-[var(--primary-beige)]">
+            {['شحن مجاني فوق 1000 ج.م', 'إرجاع مجاني خلال 14 يوم', 'جودة مضمونة 100%'].map((f, idx) => (
+              <p key={idx} className="flex items-center gap-2 justify-center"><span className="text-[var(--gold-accent)]">✦</span> {f}</p>
+            ))}
+          </div>
+        </div>
+      </div>
 
-            <div>
-              <label className="block text-amber-900 mb-1 font-medium">البريد الإلكتروني</label>
-              <Input 
-                type="email" 
-                placeholder="example@mail.com" 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-                required 
-                className="text-amber-950 bg-white border-amber-200 h-12 placeholder:text-gray-400"
-              />
-            </div>
+      {/* Right: Form */}
+      <div className="flex-1 flex items-center justify-center bg-[var(--bg-color)] px-6 py-12 relative overflow-y-auto">
+        <div className="w-full max-w-md animate-fade-in relative z-10 my-auto">
+          {/* Mobile logo */}
+          <div className="lg:hidden text-center mb-10">
+            <Link to="/" className={`text-3xl font-bold text-[var(--text-dark)] tracking-widest uppercase ${isRTL ? "font-['Cairo']" : "font-['Inter']"}`}>
+              {t('site.name')}
+            </Link>
+          </div>
 
-            <div>
-              <label className="block text-amber-900 mb-1 font-medium">كلمة المرور</label>
-              <Input 
-                type="password" 
-                placeholder="********" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                required 
-                className="text-amber-950 bg-white border-amber-200 h-12 placeholder:text-gray-400"
-              />
-            </div>
+          <div className="bg-white p-8 md:p-12 border border-[var(--border-color)]">
+            <h2 className={`text-3xl font-bold text-[var(--text-dark)] mb-3 tracking-widest uppercase ${isRTL ? "font-['Cairo']" : "font-['Inter']"}`}>
+              {isRTL ? 'إنشاء حساب جديد' : 'Create Account'}
+            </h2>
+            <p className="text-[var(--soft-brown)]/60 text-xs font-semibold uppercase tracking-widest mb-10">
+              {isRTL ? 'انضمي لعالم مُسلمة للأزياء المحتشمة' : 'Join Muslima modest fashion'}
+            </p>
 
-            <div>
-              <label className="block text-amber-900 mb-1 font-medium">تأكيد كلمة المرور</label>
-              <Input 
-                type="password" 
-                placeholder="********" 
-                value={confirmPassword} 
-                onChange={(e) => setConfirmPassword(e.target.value)} 
-                required 
-                className="text-amber-950 bg-white border-amber-200 h-12 placeholder:text-gray-400"
-              />
-            </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-[var(--text-dark)] text-xs font-semibold uppercase tracking-widest mb-3">
+                  {isRTL ? 'الاسم بالكامل' : 'Full Name'}
+                </label>
+                <input type="text" required placeholder={isRTL ? 'أدخلي اسمكِ' : 'Enter your name'}
+                  value={name} onChange={e => setName(e.target.value)}
+                  className="w-full h-14 px-4 bg-transparent border border-[var(--border-color)] focus:border-[var(--gold-accent)] outline-none text-[var(--text-dark)] placeholder-[var(--soft-brown)]/30 transition-colors font-['Inter']"
+                />
+              </div>
 
-            <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700 text-white h-12 text-lg mt-6">
-              إنشاء الحساب
-            </Button>
-          </form>
+              <div>
+                <label className="block text-[var(--text-dark)] text-xs font-semibold uppercase tracking-widest mb-3">{t('auth.email')}</label>
+                <input type="email" required placeholder="email@example.com"
+                  value={email} onChange={e => setEmail(e.target.value)}
+                  className="w-full h-14 px-4 bg-transparent border border-[var(--border-color)] focus:border-[var(--gold-accent)] outline-none text-[var(--text-dark)] placeholder-[var(--soft-brown)]/30 transition-colors font-['Inter']"
+                  dir="ltr"
+                />
+              </div>
 
-          <p className="mt-6 text-center text-gray-600">
-            لديكِ حساب بالفعل؟ <Link to="/login" className="text-amber-700 font-bold underline hover:text-amber-800">سجلي دخولكِ</Link>
-          </p>
+              <div>
+                <label className="block text-[var(--text-dark)] text-xs font-semibold uppercase tracking-widest mb-3">{t('auth.password')}</label>
+                <div className="relative">
+                  <input type={showPass ? 'text' : 'password'} required placeholder="••••••••"
+                    value={password} onChange={e => setPassword(e.target.value)}
+                    className="w-full h-14 px-4 bg-transparent border border-[var(--border-color)] focus:border-[var(--gold-accent)] outline-none text-[var(--text-dark)] placeholder-[var(--soft-brown)]/30 transition-colors font-['Inter'] pe-12"
+                    dir="ltr"
+                  />
+                  <button type="button" onClick={() => setShowPass(!showPass)}
+                    className="absolute inset-y-0 end-4 flex items-center text-[var(--soft-brown)]/50 hover:text-[var(--gold-accent)] transition-colors">
+                    {showPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[var(--text-dark)] text-xs font-semibold uppercase tracking-widest mb-3">
+                  {isRTL ? 'تأكيد كلمة المرور' : 'Confirm Password'}
+                </label>
+                <div className="relative">
+                  <input type={showConfirmPass ? 'text' : 'password'} required placeholder="••••••••"
+                    value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
+                    className="w-full h-14 px-4 bg-transparent border border-[var(--border-color)] focus:border-[var(--gold-accent)] outline-none text-[var(--text-dark)] placeholder-[var(--soft-brown)]/30 transition-colors font-['Inter'] pe-12"
+                    dir="ltr"
+                  />
+                  <button type="button" onClick={() => setShowConfirmPass(!showConfirmPass)}
+                    className="absolute inset-y-0 end-4 flex items-center text-[var(--soft-brown)]/50 hover:text-[var(--gold-accent)] transition-colors">
+                    {showConfirmPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+
+              <button type="submit" disabled={loading}
+                className="w-full h-16 bg-[var(--text-dark)] text-white hover:bg-[var(--soft-brown)] font-semibold text-sm tracking-widest uppercase transition-colors flex items-center justify-center gap-3 disabled:opacity-50 mt-4">
+                {loading
+                  ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  : <><UserPlus className="w-5 h-5" />{t('nav.register')}</>
+                }
+              </button>
+            </form>
+
+            <p className="text-center text-xs font-semibold uppercase tracking-widest text-[var(--soft-brown)]/60 mt-8">
+              {isRTL ? 'لديكِ حساب بالفعل؟' : 'Already have an account?'} {' '}
+              <Link to="/login" className="text-[var(--text-dark)] hover:text-[var(--gold-accent)] transition-colors underline">{t('nav.login')}</Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

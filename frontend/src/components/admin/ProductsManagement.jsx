@@ -13,6 +13,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Plus, Settings } from 'lucide-react';
 import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
+import { API } from '@/config';
 
 const ProductsManagement = () => {
   const { language } = useLanguage();
@@ -32,8 +33,8 @@ const ProductsManagement = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8080/api/products/');
-      setProducts(res.data);
+      const res = await axios.get(`${API}/api/products/`);
+      setProducts(res.data.results || res.data);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -47,10 +48,10 @@ const ProductsManagement = () => {
     try {
         const config = { headers: { Authorization: `Bearer ${token}` } };
         // First create a blank product
-        const { data } = await axios.post('http://127.0.0.1:8080/api/products/create/', {}, config);
+        const { data } = await axios.post(`${API}/api/products/create/`, {}, config);
         
         // Then update it with our values
-        await axios.put(`http://127.0.0.1:8080/api/products/update/${data._id}/`, newProduct, config);
+        await axios.put(`${API}/api/products/update/${data._id}/`, newProduct, config);
         
         toast({ title: language === 'ar' ? "تم الإضافة بنجاح" : "Product added" });
         setShowAddModal(false);
@@ -64,7 +65,7 @@ const ProductsManagement = () => {
     if (confirm(language === 'ar' ? 'هل أنت متأكد من حذف هذا المنتج؟' : 'Are you sure you want to delete this product?')) {
         try {
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            await axios.delete(`http://127.0.0.1:8080/api/products/delete/${productId}/`, config);
+            await axios.delete(`${API}/api/products/delete/${productId}/`, config);
             setProducts(products.filter(p => p._id !== productId));
             toast({ title: language === 'ar' ? "تم الحذف بنجاح" : "Product deleted" });
         } catch (error) {
@@ -77,7 +78,7 @@ const ProductsManagement = () => {
     const newStock = currentStock > 0 ? 0 : 10;
     try {
         const config = { headers: { Authorization: `Bearer ${token}` } };
-        await axios.put(`http://127.0.0.1:8080/api/products/update/${productId}/`, { countInStock: newStock }, config);
+        await axios.put(`${API}/api/products/update/${productId}/`, { countInStock: newStock }, config);
         setProducts(products.map(p => (p._id === productId ? { ...p, countInStock: newStock } : p)));
     } catch (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });

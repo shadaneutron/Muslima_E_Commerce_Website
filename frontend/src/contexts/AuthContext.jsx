@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext } from 'react';
 import axios from 'axios';
+import { API } from '@/config';
 
 const AuthContext = createContext();
 
@@ -9,7 +10,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const { data } = await axios.post('http://127.0.0.1:8080/api/users/login/', {
+      const { data } = await axios.post(`${API}/api/users/login/`, {
         username: email,
         password: password,
       });
@@ -25,7 +26,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      await axios.post('http://127.0.0.1:8080/api/users/register/', {
+      await axios.post(`${API}/api/users/register/`, {
         name: name,
         email: email,
         password: password,
