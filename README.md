@@ -6,30 +6,13 @@ The platform is designed with a luxury boutique aesthetic using a modern React +
 
 ---
 
-# Live Demo
 
-### Frontend Website
-
-[Add your deployed Vercel link here]
-
-Example:
-https://muslima-boutique.vercel.app
-
----
-
-### Backend API
-
-[Add your deployed backend link here]
-
-Example:
-https://muslima-api.onrender.com
-
----
 
 # Screenshots
 
 ## Homepage
 
+<img width="2559" height="1270" alt="Screenshot 2026-05-18 224044" src="https://github.com/user-attachments/assets/de67a8ab-ad5e-4b4e-a5a5-28c5e77624a1" />
 
 
 ---
@@ -42,6 +25,8 @@ https://muslima-api.onrender.com
 ---
 
 ## Product Details
+
+<img width="2559" height="1273" alt="Screenshot 2026-05-18 224131" src="https://github.com/user-attachments/assets/e98654ea-bce7-4dcd-99c2-fb7e53261d85" />
 
 
 
